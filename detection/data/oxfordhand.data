@@ -1,4 +1,4 @@
-classes= 1
-train=data/train.txt
-valid=data/valid.txt
-names=data/oxfordhand.names
+classes=1
+train=/home/lixie/sht/Tracking-PyTorch/detection/data/train.txt
+valid=/home/lixie/sht/Tracking-PyTorch/detection/data/valid.txt
+names=/home/lixie/sht/Tracking-PyTorch/detection/data/oxfordhand.names
