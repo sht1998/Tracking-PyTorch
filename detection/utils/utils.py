@@ -32,7 +32,7 @@ def floatn(x, n=3):  # format floats to n decimals
     return float(format(x, '.%gf' % n))
 
 
-def init_seeds(seed=0):
+def init_seeds(seed=42):
     random.seed(seed)
     np.random.seed(seed)
     torch_utils.init_seeds(seed=seed)

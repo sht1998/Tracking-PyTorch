@@ -129,11 +129,53 @@ def detect(save_txt=False, save_img=False):
     print('Done. (%.3fs)' % (time.time() - t0))
 
 
+def getfps():
+    img_size = opt.img_size
+    source = opt.source
+    half = opt.half
+    weights = opt.weights
+    # device = torch_utils.select_device(device='cpu' if ONNX_EXPORT else opt.device)
+    device = torch_utils.select_device(device='cpu')
+
+    dataset = LoadImages(source, img_size=img_size, half=half)
+
+    model = Darknet(opt.cfg, img_size)
+    attempt_download(weights)
+    if weights.endswith('.pt'):  # pytorch format
+        model.load_state_dict(torch.load(weights, map_location=device)['model'])
+    else:  # darknet format
+        _ = load_darknet_weights(model, weights)
+
+    # Eval mode
+    model.to(device).eval()
+
+    for path, img0, im0s, vid_cap in dataset:
+        T = 0
+        for _ in range(1000):
+            img = torch.from_numpy(img0).to(device)
+            if img.ndimension() == 3:
+                img = img.unsqueeze(0)
+            t0 = time.time()
+
+            pred, _ = model(img)
+            # _ = non_max_suppression(pred, opt.conf_thres, opt.nms_thres)
+
+            t = time.time()
+            T += t - t0
+        print('fps = %.2f' % (1 / T * 1000))
+
+
+
+
+    
+
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--cfg', type=str, default='cfg/yolov3-spp.cfg', help='cfg file path')
-    parser.add_argument('--data', type=str, default='data/coco.data', help='coco.data file path')
-    parser.add_argument('--weights', type=str, default='weights/yolov3-spp.weights', help='path to weights file')
+    parser.add_argument('--cfg', type=str, default='cfg/yolov3-hand.cfg', help='cfg file path')
+    parser.add_argument('--data', type=str, default='data/oxfordhand.data', help='coco.data file path')
+    parser.add_argument('--weights', type=str, default='weights/last.pt', help='path to weights file')
     parser.add_argument('--source', type=str, default='data/samples', help='source')  # input file/folder, 0 for webcam
     parser.add_argument('--output', type=str, default='output', help='output folder')  # output folder
     parser.add_argument('--img-size', type=int, default=416, help='inference size (pixels)')
@@ -141,10 +183,13 @@ if __name__ == '__main__':
     parser.add_argument('--nms-thres', type=float, default=0.5, help='iou threshold for non-maximum suppression')
     parser.add_argument('--fourcc', type=str, default='mp4v', help='output video codec (verify ffmpeg support)')
     parser.add_argument('--half', action='store_true', help='half precision FP16 inference')
-    parser.add_argument('--device', default='', help='device id (i.e. 0 or 0,1) or cpu')
+    parser.add_argument('--device', default='0', help='device id (i.e. 0 or 0,1) or cpu')
     parser.add_argument('--view-img', action='store_true', help='display results')
     opt = parser.parse_args()
     print(opt)
 
     with torch.no_grad():
         detect()
+        
+        # 检测fps
+        # getfps()

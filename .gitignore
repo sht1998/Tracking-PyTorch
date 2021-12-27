@@ -1,8 +1,23 @@
+# 权重文件
 darknet53.conv.74
 *.pt
 *.weights
+*.pth
 
+# 数据集
 detection/data/images
 detection/data/labels
 
+# log
 detection/runs
+reid/runs
+
+# 运行过程中产生的一些图片和数据
+results.png
+results.txt
+*.mat
+detection/train_batch0.jpg
+detection/test_batch0.jpg
+
+# 输出
+detection/output

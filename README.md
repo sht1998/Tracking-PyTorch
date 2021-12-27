@@ -1,7 +1,19 @@
 # Tracking-PyTorch
 object tracking
 
-- [ ] yolov3/v4 object detection module
-- [ ] reid module
-- [ ] prune
-- [ ] whole model
+## TODO List
+- [x] 目标检测模型及评价指标
+- [x] 目标重识别模型及评价指标
+- [x] 检测模型剪枝
+- [ ] 重识别模型剪枝
+- [ ] 目标追踪框架搭建
+
+---
+
+## 训练过程
+
+记录完整的模型训练过程以及评价指标的计算
+
+### 一、目标检测模型训练及评价指标
+
+1. 

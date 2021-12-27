@@ -12,13 +12,13 @@ import argparse
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--cfg', type=str, default='cfg/yolov3.cfg', help='cfg file path')
-    parser.add_argument('--data', type=str, default='data/coco.data', help='*.data file path')
+    parser.add_argument('--cfg', type=str, default='cfg/yolov3-hand.cfg', help='cfg file path')
+    parser.add_argument('--data', type=str, default='data/oxfordhand.data', help='*.data file path')
     parser.add_argument('--weights', type=str, default='weights/last.pt', help='sparse model weights')
     parser.add_argument('--shortcuts', type=int, default=8, help='how many shortcut layers will be pruned,\
         pruning one shortcut will also prune two CBL,yolov3 has 23 shortcuts')
     parser.add_argument('--global_percent', type=float, default=0.6, help='global channel prune percent')
-    parser.add_argument('--layer_keep', type=float, default=0.01, help='channel keep percent per layer')
+    parser.add_argument('--layer_keep', type=float, default=0.1, help='channel keep percent per layer')
     parser.add_argument('--img_size', type=int, default=416, help='inference size (pixels)')
     opt = parser.parse_args()
     print(opt)

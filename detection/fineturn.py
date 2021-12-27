@@ -11,11 +11,9 @@ from utils.utils import *
 from utils.prune_utils import *
 
 
-mixed_precision = True
-try:  # Mixed precision training https://github.com/NVIDIA/apex
-    from apex import amp
-except:
-    mixed_precision = False  # not installed
+mixed_precision = False
+
+from apex import amp
 
 wdir = 'weights' + os.sep  # weights dir
 last = wdir + 'last.pt'
@@ -322,7 +320,7 @@ def train():
                     ns = [math.ceil(x * sf / 32.) * 32 for x in imgs.shape[2:]]  # new shape (stretched to 32-multiple)
                     imgs = F.interpolate(imgs, size=ns, mode='bilinear', align_corners=False)
 
-            #Plot images with bounding boxes
+            # Plot images with bounding boxes
             if ni == 0:
                 fname = 'train_batch%g.jpg' % i
                 plot_images(imgs=imgs, targets=targets, paths=paths, fname=fname)
@@ -357,9 +355,9 @@ def train():
                         output_t = t_model(imgs)
                 else:
                     _, output_t = t_model(imgs)
-                #soft_target = distillation_loss1(pred, output_t, model.nc, imgs.size(0))
+                soft_target = distillation_loss1(pred, output_t, model.nc, imgs.size(0))
                 #这里把蒸馏策略改为了二，想换回一的可以注释掉loss2，把loss1取消注释
-                soft_target, reg_ratio = distillation_loss2(model, targets, pred, output_t)
+                # soft_target, reg_ratio = distillation_loss2(model, targets, pred, output_t)
                 loss += soft_target
 
             # Scale loss by nominal batch_size of 64
@@ -491,8 +489,8 @@ if __name__ == '__main__':
     parser.add_argument('--epochs', type=int, default=100)  # 500200 batches at bs 16, 117263 images = 273 epochs
     parser.add_argument('--batch-size', type=int, default=16)  # effective bs = batch_size * accumulate = 16 * 4 = 64
     parser.add_argument('--accumulate', type=int, default=2, help='batches to accumulate before optimizing')
-    parser.add_argument('--cfg', type=str, default='cfg/yolov3-hand.cfg', help='cfg file path')
-    parser.add_argument('--t_cfg', type=str, default='', help='teacher model cfg file path for knowledge distillation')
+    parser.add_argument('--cfg', type=str, default='cfg/student.cfg', help='cfg file path')
+    parser.add_argument('--t_cfg', type=str, default='cfg/yolov3-hand.cfg', help='teacher model cfg file path for knowledge distillation')
     parser.add_argument('--data', type=str, default='data/oxfordhand.data', help='*.data file path')
     parser.add_argument('--multi-scale', action='store_true', help='adjust (67% - 150%) img_size every 10 batches')
     parser.add_argument('--img_size', type=int, default=416, help='inference size (pixels)')
@@ -505,8 +503,8 @@ if __name__ == '__main__':
     parser.add_argument('--bucket', type=str, default='', help='gsutil bucket')
     parser.add_argument('--img-weights', action='store_true', help='select training images by weight')
     parser.add_argument('--cache-images', action='store_true', help='cache images for faster training')
-    parser.add_argument('--weights', type=str, default='weights/darknet53.conv.74', help='initial weights')  # i.e. weights/darknet.53.conv.74
-    parser.add_argument('--t_weights', type=str, default='', help='teacher model weights')
+    parser.add_argument('--weights', type=str, default='weights/student.weights', help='initial weights')  # i.e. weights/darknet.53.conv.74
+    parser.add_argument('--t_weights', type=str, default='weights/teacher.pt', help='teacher model weights')
     parser.add_argument('--arc', type=str, default='defaultpw', help='yolo architecture')  # defaultpw, uCE, uBCE
     parser.add_argument('--prebias', action='store_true', help='transfer-learn yolo biases prior to training')
     parser.add_argument('--name', default='', help='renames results.txt to results_name.txt if supplied')
